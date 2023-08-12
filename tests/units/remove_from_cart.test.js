@@ -1,10 +1,10 @@
 const pool = require('../../db/dbconfig');
 
+const session_id = 19;
+const product_id = 12;
 
 test('should remove a product from the cart', async () => {
 
-    const session_id = 19;
-    const product_id = 12;
     
     await pool.query('SELECT remove_from_cart($1, $2)', [session_id, product_id])
 

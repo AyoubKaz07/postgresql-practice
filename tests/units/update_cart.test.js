@@ -1,17 +1,13 @@
 const pool = require('../../db/dbconfig');
 
+const session_id = 2;
+const product_id = 1;
+const quantity = 3;
 
 test('should update the cart', async () => {
 
-    const session_id = 2;
-    const product_id = 1;
-    const quantity = 3;
     
-    try {
-        await pool.query('SELECT update_cart($1, $2, $3)', [session_id, product_id, quantity]);
-    } catch (error) {
-        throw error;
-    }
+    await pool.query('SELECT update_cart($1, $2, $3)', [session_id, product_id, quantity])
     
     const cart_item = await pool.query('SELECT * FROM cart_item WHERE session_id = $1 AND product_id = $2', [
         session_id,

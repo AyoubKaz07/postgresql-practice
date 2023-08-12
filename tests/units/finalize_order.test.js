@@ -1,11 +1,14 @@
 const pool = require('../../db/dbconfig')
 
+let session_id = 19;
+let order_id;
+
 
 test('Should finalize the order, clearing the cart', async () => {
-    const session_id = 2
     await pool.query('CALL finalize_order($1)', [session_id])
 
     const order = await pool.query('SELECT * from order_details ORDER BY order_date DESC LIMIT 1')
+    order_id = order.rows[0].id;
     const order_items = await pool.query('SELECT * from order_items WHERE order_id = $1', [order.rows[0].id])
 
     const old_shopping_session = await pool.query('SELECT * from shopping_session where id = $1', [session_id])
@@ -16,3 +19,8 @@ test('Should finalize the order, clearing the cart', async () => {
     expect(old_shopping_session.rows).toHaveLength(0);
     expect(old_cart_items.rows).toHaveLength(0);
 })
+
+afterAll(async () => {
+    await pool.query('DELETE FROM order_items WHERE order_id = $1', [order_id]);
+    await pool.query('DELETE FROM order_details WHERE id = $1', [order_id]);
+});

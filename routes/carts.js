@@ -1,37 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const pool = require('../db/dbconfig');
+const { addToCart, removeFromCart, updateCart } = require('../controllers/Carts');
 
 
-router.post('/add', (req, res) => {
-    const { product_id, quantity }  = req.body;
-    // temporary
-    const sessionId = 5;
-    pool.query('SELECT add_to_cart($1, $2, $3)', [sessionId, product_id, quantity], (error, result) => {
-        if (error) throw error;
-        res.send('Product added to cart');
-    })
-})
+router.post('/add', addToCart)
 
-router.post('/remove', (req, res) => {
-    const { product_id } = req.body;
-    // temporary
-    const sessionId = 5;
-    pool.query('SELECT remove_from_cart($1, $2)', [sessionId, product_id], (error, result) => {
-        if (error) throw error;
-        res.send('Product removed from cart');
-    })
-})
+router.delete('/remove', removeFromCart)
 
-router.patch('/update', (req, res) => {
-    const { product_id, quantity } = req.body;
-    // temporary
-    const sessionId = 5;
-    pool.query('SELECT update_cart($1, $2, $3)', [sessionId, product_id, quantity], (error, result) => {
-        if (error) throw error;
-        res.send('Cart updated');
-    })
-})
+router.patch('/update', updateCart)
 
 module.exports = router;

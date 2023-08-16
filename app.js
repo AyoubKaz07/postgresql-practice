@@ -10,7 +10,7 @@ const categoriesRouter = require('./routes/categories');
 const port = 3000;
 
 app.use(express.json());
-app.use('/cart', cartRouter);
+app.use('/carts', cartRouter);
 app.use('/categories', categoriesRouter);
 app.use('/products', productRouter);
 app.use('/orders', ordersRouter);

@@ -24,10 +24,10 @@ const getProducts = (req, res) => {
 };
 
 const getProduct = async (req, res) => {
-    const name = req.params.name;
-    const sqlQuery = 'SELECT * FROM products WHERE name = $1';
+    const id = req.params.id;
+    const sqlQuery = 'SELECT * FROM products WHERE id = $1';
     
-    const result = await pool.query(sqlQuery, [name]);
+    const result = await pool.query(sqlQuery, [id]);
     if (result.rows.length === 0) {
         return res.status(404).send('Page Not Found');
     }
@@ -35,7 +35,50 @@ const getProduct = async (req, res) => {
     res.send(result.rows);
 }
 
+const updateProduct = async (req, res) => {
+    const id = req.params.id;
+
+    const productExists = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    if (productExists.rows.length === 0) {
+        return res.status(404).send('Page Not Found');
+    }
+
+    const sqlQuery = 'SELECT * FROM update_product($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+
+    const result = await pool.query(sqlQuery, [id, ...Object.values(req.body)]);
+
+    res.send(result.rows);
+};
+
+const deleteProduct = async (req, res) => {
+    const id = req.params.id;
+
+    const productExists = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    if (productExists.rows.length === 0) {
+        return res.status(404).send('Page Not Found');
+    }
+
+    const sqlQuery = 'DELETE FROM products WHERE id = $1';
+
+    await pool.query(sqlQuery, [id]);
+
+    res.send('Product Deleted');
+};
+
+const addProduct = async (req, res) => {
+    // product should be an object with the right properties
+    const product = req.body;
+
+    // add product to database
+    const result = await pool.query('SELECT * FROM add_product($1, $2, $3, $4, $5, $6, $7, $8, $9)', Object.values(product));
+
+    res.send(result.rows);
+};
+
 module.exports = {
     getProducts,
-    getProduct
+    getProduct,
+    addProduct,
+    updateProduct,
+    deleteProduct
 }

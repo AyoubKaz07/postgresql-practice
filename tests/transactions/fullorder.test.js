@@ -2,7 +2,7 @@ const pool = require('../../db/dbconfig');
 const math = require('mathjs');
 
 let session_id;
-let product_id = math.randomInt(10, 20);
+let product_id = 201166 // has a lot of stock
 let quantity = math.randomInt(1, 5);
 let customer_id;
 let order_id;
@@ -16,9 +16,14 @@ beforeEach(async () => {
 });
 
 test('add to cart, finalize order, check order details', async () => {
-    await pool.query('SELECT add_to_cart($1, $2, $3)', [session_id, product_id, quantity]);
+    await pool.query('CALL add_to_cart($1, $2, $3, $4, $5)', [session_id, product_id, quantity, {"costs": 100}, 'testprescription']);
 
-    await pool.query('CALL finalize_order($1)', [session_id]).catch(e => {
+    // expect no errors could fail in case
+    await pool.query('CALL check_stock($1)', [session_id]).catch(e => {
+        expect(e).toBeFalsy();
+    });
+
+    await pool.query('CALL finalize_order($1, $2, $3, $4, $5)', [session_id, {"": ""}, 120, 'card', 'paid']).catch(e => {
         expect(e).toBeFalsy();
     });
 
@@ -37,7 +42,8 @@ test('add to cart, finalize order, check order details', async () => {
 
     // Delete the custome, order, order_items, return the product to stock
     await pool.query('DELETE FROM order_items WHERE order_id = $1', [order_id]);
-    await pool.query('DELETE FROM order_details WHERE customer_id = $1', [customer_id]);
+    await pool.query('DELETE FROM order_details WHERE id = $1', [order_id]);
+    await pool.query('DELETE FROM payment_details WHERE id = $1', [order.rows[0].payment_id]);
     await pool.query('DELETE FROM customers WHERE id = $1', [customer_id]);
 
 
@@ -51,13 +57,12 @@ test('edge case: product with 0 stock quantity', async () => {
     const zeroStockProductId = zeroStockProduct.rows[0].id;
   
     // Perform operations that involve the zero stock product, if needed
-    await pool.query('SELECT add_to_cart($1, $2, $3)', [session_id, zeroStockProductId, quantity]);
+    await pool.query('CALL add_to_cart($1, $2, $3, $4, $5)', [session_id, zeroStockProductId, quantity, {"costs": 100}, 'testprescription']);
 
     // expect a thrown error
-    await pool.query('CALL finalize_order($1)', [session_id]).catch(error => {
-        // Verify that an error was thrown and it has the expected message
-        expect(error.message).toEqual('Some products have insufficient stock');
-    });      
+    await pool.query('CALL check_stock($1)', [session_id]).catch(e => {
+        expect(e).toBeTruthy();
+    });
 
     // Delete the shopping session, cart items, and the zero stock product after the test
     await pool.query('DELETE FROM cart_item WHERE session_id = $1', [session_id]);

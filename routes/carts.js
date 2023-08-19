@@ -4,9 +4,9 @@ const router = express.Router();
 const { addToCart, removeFromCart, updateCart, getCart } = require('../controllers/Carts');
 
 
-router.post('/add/', addToCart)
+router.post('/add', addToCart)
 router.delete('/remove/:id', removeFromCart)
 router.patch('/update/:id', updateCart)
-router.get('/getcart/', getCart)
+router.get('/mycart', getCart)
 
 module.exports = router;

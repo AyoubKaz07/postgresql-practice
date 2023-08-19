@@ -30,11 +30,12 @@ const updateCart = async (req, res) => {
 
 const getCart = async (req, res) => {
     // temporary
-    const sessionId = 18;
+    const sessionId = 273;
+
     const cart = await pool.query('SELECT * FROM get_cart($1)', [sessionId]);
 
     if (cart.rows.length === 0) {
-        res.send('Cart is empty');
+        return res.send('Cart is empty');
     }
 
     res.json(cart.rows);

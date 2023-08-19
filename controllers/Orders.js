@@ -105,14 +105,14 @@ const finalizeOrder = async (req, res) => {
 };
 
 
-const getOrders = async (req, res) => {
+const getCustomerOrders = async (req, res) => {
     // temporary (get customer id from session)
-    const customer_id = 0;
+    const customer_id = 1;
     
     const result = await pool.query('SELECT * FROM order_details WHERE customer_id = $1', [customer_id]);
 
     if (result.rows.length === 0) {
-        return res.status(404).send('Page Not Found');
+        return res.status(200).send('No orders found');
     }
 
     res.send(result.rows);
@@ -129,7 +129,38 @@ const getOrder = async (req, res) => {
     res.send(result.rows);
 }
 
-const usedPayment = async (req, res) => {
+const getOrders = async (req, res) => {
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const offset = (page - 1) * limit;
+    const { before, after } = req.query;
+    
+    let sqlparams = [];
+    let sqlparam = 1;
+    
+    let sqlQuery = 'SELECT * FROM order_details';
+    if (before) {
+        sqlQuery += ` WHERE order_date < $${sqlparam}}`;
+        sqlparam++;
+        sqlparams.push(before);
+    } else if (after) {
+        sqlQuery += ` WHERE order_date > $${sqlparam}}`;
+        sqlparam++;
+        sqlparams.push(after);
+    }
+    sqlQuery += ` ORDER BY order_date DESC LIMIT $${sqlparam++} OFFSET $${sqlparam}`;
+    sqlparams.push(limit, offset);
+
+    const result = await pool.query(sqlQuery, sqlparams);
+
+    if (result.rows.length === 0) {
+        return res.status(200).send('No orders found');
+    }
+
+    res.send(result.rows);
+}
+
+const paymentDetails = async (req, res) => {
     const order_id = req.params.order_id;
     const result = await pool.query('SELECT payment_details.* FROM order_details as od JOIN payment_details as pd ON od.payment_id = pd.id WHERE od.id = $1 ', [order_id]);
 
@@ -141,9 +172,10 @@ const usedPayment = async (req, res) => {
 }
 
 module.exports = {
-    finalizeOrder,
     getOrders,
+    finalizeOrder,
+    getCustomerOrders,
     getOrder,
-    usedPayment,
+    paymentDetails,
     startCheckout
 }

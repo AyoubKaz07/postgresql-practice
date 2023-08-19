@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const { finalizeOrder, getOrder, getOrders, usedPayment, startCheckout } = require('../controllers/Orders');
+const { getOrders, finalizeOrder, getOrder, getCustomerOrders, paymentDetails, startCheckout } = require('../controllers/Orders');
 
 
-router.get('/', getOrders);
+router.get('/allorders', getOrders);
+router.get('/myOrders', getCustomerOrders);
 router.route('/finalizeorder').get(finalizeOrder);
 router.route('/:order_id').get(getOrder);
-router.get('/paymentdetails/:order_id', usedPayment);
+router.get('/paymentdetails/:order_id', paymentDetails);
 router.post('/checkout', startCheckout);
 
 

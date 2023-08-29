@@ -1,0 +1,17 @@
+.iconsBar {
+    display: inline-flex;
+    align-items: center;
+    gap: 30px;
+    margin-right: 30px;
+}
+
+.iconLink {
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}

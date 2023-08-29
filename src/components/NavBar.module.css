@@ -1,0 +1,35 @@
+.navBar {
+    display: flex;
+    width: 1202px;
+    height: 60px;
+    justify-content: space-between; /* Adjusts space between the three sections */
+    align-items: center; /* Vertically aligns items */
+}
+
+.navLinks {
+    display: flex;
+    align-items: center;
+    gap: 70px;
+}
+
+.navLink {
+    color: #fec038;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.navLink:hover {
+    color: white;
+}
+.logoContainer {
+    margin-left: 0; /* Push logo to the left */
+}
+
+.logo {
+    width: 150px;
+    height: 60px;
+    flex-shrink: 0;
+}

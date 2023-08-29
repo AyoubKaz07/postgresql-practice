@@ -1,0 +1,5 @@
+.rec{
+    height: 142px;
+    flex-shrink: 0;
+    background: linear-gradient(315deg, #170E07 0%, #150C05 100%);
+}

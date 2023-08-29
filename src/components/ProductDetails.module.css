@@ -1,0 +1,32 @@
+/* styles/ProductDetail.module.css */
+
+.productDetail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  
+  .productName {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .productImage {
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
+  
+  .productInfo {
+    text-align: center;
+    font-size: 16px;
+  }
+  
+  .productInfo p {
+    margin-bottom: 10px;
+  }  
